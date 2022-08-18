@@ -1,49 +1,10 @@
 <script>
-	import { previewSrc } from '$lib/stores';
+	import Import from './Import.svelte';
+	import { sourceContent, previewSrc } from '$lib/stores';
 	import { timeFormat } from '$lib/scripts/timeFormat';
 
-	let sourceFiles;
-	let allContent = [];
 	let videoPreviews = [];
 	let videoDuration = [];
-
-	const options = {
-		multiple: true,
-		types: [
-			{
-				description: 'Videos',
-				accept: {
-					'video/mp4': '.mp4'
-				}
-			}
-		],
-		excludeAcceptAllOption: true
-	};
-
-	async function openFilePicker() {
-		sourceFiles = await window.showOpenFilePicker(options);
-
-		allContent = [
-			...allContent,
-			...(
-				await Promise.all(
-					sourceFiles.map(async (fileHandle) => {
-						const file = await fileHandle.getFile();
-						const src = URL.createObjectURL(file);
-
-						const newContent = {
-							src,
-							label: file.name,
-							size: file.size
-						};
-
-						if (!allContent.some((content) => content.label === newContent.label))
-							return newContent;
-					})
-				)
-			).filter((item) => item)
-		];
-	}
 
 	function playOnEnter(video) {
 		video.play();
@@ -55,16 +16,17 @@
 
 	function selectPreview(src) {
 		$previewSrc = src;
-		console.log($previewSrc);
 	}
 </script>
 
 <main class="col fcenter fill">
-	{#if allContent.length > 0}
-		<div class="scroll">
+	<Import />
+
+	<div class="scroll">
+		{#if $sourceContent.length > 0}
 			<ul class="row xfill">
-				{#each allContent as { src, label, size }, i}
-					<li class="col grow3">
+				{#each $sourceContent as { src, label, size }, i}
+					<li class="col">
 						<video
 							class="cover fill"
 							{src}
@@ -77,47 +39,44 @@
 							on:mouseleave={() => pauseOnLeave(videoPreviews[i])}
 							on:click={() => selectPreview(src)}
 						/>
-						<p class="tright xfill">{timeFormat(videoDuration[i])}</p>
+						<p>{timeFormat(videoDuration[i])}</p>
 					</li>
 				{/each}
 			</ul>
-		</div>
-	{/if}
-	<button on:click={openFilePicker}>ADD CONTENT</button>
+		{/if}
+	</div>
 </main>
 
 <style lang="scss">
 	main {
-		width: 25%;
-		height: 60%;
-		box-shadow: inset 0 0 0 1px #000;
+		width: 15%;
+		height: 100%;
+		border-right: 1px solid var(--color-border);
 	}
 
 	ul {
 		gap: 10px;
-		padding: 20px;
+		padding: 10px;
 	}
 
 	li {
+		cursor: pointer;
 		position: relative;
-		aspect-ratio: 4/3;
+		width: calc(50% - 5px);
+
+		video {
+			aspect-ratio: 4/3;
+		}
 
 		p {
 			position: absolute;
 			bottom: 0;
-			left: 0;
+			right: 0;
 			color: #fff;
-			font-size: 12px;
+			font-size: 10px;
 			font-weight: bold;
 			text-shadow: 0 0 2px rgba(#000, 0.9);
 			padding: 4px 6px;
 		}
-	}
-
-	button {
-		color: var(--color-pri);
-		font-weight: bold;
-		font-size: 12px;
-		box-shadow: inset 0 0 0 1px var(--color-pri);
 	}
 </style>

@@ -1,28 +1,33 @@
 <script>
-	import { previewSrc } from '$lib/stores';
-	import Controls from './Controls.svelte';
+	import { previewSrc, isPlaying } from '$lib/stores';
+
+	let videoEl;
+
+	$: if ($previewSrc) $isPlaying = !isPlaying;
+	$: if (videoEl) $isPlaying ? videoEl.play() : videoEl.pause();
 </script>
 
 <main class="col fcenter fill">
-	<div class="video-wrapper fill">
-		<video class="fill contain" src={$previewSrc} autoplay>
+	<div class="video-wrapper row fcenter fill">
+		<video bind:this={videoEl} class="contain" src={$previewSrc}>
 			<track kind="captions" />
 		</video>
 	</div>
-
-	<Controls />
 </main>
 
 <style lang="scss">
 	main {
-		width: 50%;
-		height: 60%;
-		box-shadow: inset 0 0 0 1px #000;
+		height: calc(100% - 50px);
 	}
 
 	.video-wrapper {
-		height: calc(100% - 80px);
+		background: var(--color-pri);
 		padding: 20px;
+
+		video {
+			width: 60%;
+			aspect-ratio: 16/9;
+		}
 	}
 
 	video {

@@ -4,8 +4,8 @@
 
 <style lang="scss">
 	main {
-		width: 25%;
-		height: 60%;
-		box-shadow: inset 0 0 0 1px #000;
+		width: 17.65%;
+		height: 75%;
+		border-left: 1px solid var(--color-border);
 	}
 </style>

@@ -4,16 +4,18 @@
 	import Properties from '$lib/components/Properties.svelte';
 	import Tools from '$lib/components/Tools.svelte';
 	import Timeline from '$lib/components/Timeline.svelte';
-	import Audio from '$lib/components/Audio.svelte';
 </script>
 
 <main class="viewport row">
 	<Source />
-	<Preview />
-	<Properties />
-	<Tools />
-	<Timeline />
-	<Audio />
+	<aside class="row">
+		<article class="col">
+			<Preview />
+			<Tools />
+		</article>
+		<Properties />
+		<Timeline />
+	</aside>
 </main>
 
 <style lang="scss">
@@ -21,12 +23,23 @@
 	@import 'https://cdn.jsdelivr.net/gh/verdulife/utility-classes/dist/utility-classes.css';
 
 	:root {
-		--color-pri: #666;
+		--color-pri: #a4a4a4;
 		--color-sec: #1b1b1b;
+		--color-border: #333;
 	}
 
 	.viewport {
 		background: var(--color-sec);
 		color: var(--color-pri);
+	}
+
+	aside {
+		width: 85%;
+		height: 100%;
+	}
+
+	article {
+		width: 82.35%;
+		height: 75%;
 	}
 </style>
