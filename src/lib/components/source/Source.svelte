@@ -1,6 +1,6 @@
 <script>
 	import Import from './Import.svelte';
-	import { sourceContent, previewSrc } from '$lib/stores';
+	import { sourceContent, previewState } from '$lib/stores';
 	import { timeFormat } from '$lib/scripts/timeFormat';
 
 	let videoPreviews = [];
@@ -15,7 +15,7 @@
 	}
 
 	function selectPreview(src) {
-		$previewSrc = src;
+		$previewState.src = src;
 	}
 </script>
 

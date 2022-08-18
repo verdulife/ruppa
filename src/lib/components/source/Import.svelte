@@ -1,5 +1,6 @@
 <script>
 	import { sourceContent } from '$lib/stores';
+
 	let sourceFiles;
 	const options = {
 		multiple: true,
@@ -15,7 +16,11 @@
 	};
 
 	async function openFilePicker() {
-		sourceFiles = await window.showOpenFilePicker(options);
+		try {
+			sourceFiles = await window.showOpenFilePicker(options);
+		} catch {
+			return;
+		}
 
 		$sourceContent = [
 			...$sourceContent,

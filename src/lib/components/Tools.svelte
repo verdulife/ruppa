@@ -1,30 +1,24 @@
 <script>
-	import { isPlaying, previewSrc } from '$lib/stores';
+	import { isPlaying, previewState } from '$lib/stores';
 	import { onMount } from 'svelte';
 
 	function playPausePreview() {
-		if ($previewSrc === '') return;
+		if ($previewState.src === '') return;
 		$isPlaying = !$isPlaying;
 	}
 
 	function frameNext() {
-		if ($previewSrc === '') return;
+		if ($previewState.src === '') return;
 	}
 
 	onMount(() => {
 		window.addEventListener('keydown', (e) => {
-			if (e.code === 'Space' && $previewSrc !== '') $isPlaying = !$isPlaying;
+			if (e.code === 'Space' && $previewState.src !== '') $isPlaying = !$isPlaying;
 		});
 	});
 </script>
 
-<main class="row jbetween acenter fill">
-	<ul class="tools row fcenter">
-		<li class="row fcenter">
-			<h6>Tools</h6>
-		</li>
-	</ul>
-
+<main class="row fcenter fill">
 	<ul class="controls row fcenter">
 		<li class="row fcenter">
 			<img src="/icons/clip-start.svg" alt="Clip start" title="Clip start" />
@@ -40,12 +34,6 @@
 		</li>
 		<li class="row fcenter">
 			<img src="/icons/clip-end.svg" alt="Clip end" title="Clip end" />
-		</li>
-	</ul>
-
-	<ul class="tools row fcenter">
-		<li class="row fcenter">
-			<h6>Tools</h6>
 		</li>
 	</ul>
 </main>
