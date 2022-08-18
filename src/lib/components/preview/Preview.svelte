@@ -5,7 +5,7 @@
 
 <main class="col fcenter fill">
 	<div class="video-wrapper fill">
-		<video class="fill contain" src={$previewSrc.src} autoplay>
+		<video class="fill contain" src={$previewSrc} autoplay>
 			<track kind="captions" />
 		</video>
 	</div>
@@ -21,6 +21,7 @@
 	}
 
 	.video-wrapper {
+		height: calc(100% - 80px);
 		padding: 20px;
 	}
 

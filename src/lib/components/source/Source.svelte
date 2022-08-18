@@ -1,16 +1,18 @@
 <script>
 	import { previewSrc } from '$lib/stores';
-	import { getVideoCover } from './getThumbnail';
+	import { timeFormat } from '$lib/scripts/timeFormat';
 
-	let sourceFiles, allContent;
+	let sourceFiles;
+	let allContent = [];
+	let videoPreviews = [];
+	let videoDuration = [];
 
 	const options = {
 		multiple: true,
 		types: [
 			{
-				description: 'Images & Videos',
+				description: 'Videos',
 				accept: {
-					'image/jpg': '.jpg',
 					'video/mp4': '.mp4'
 				}
 			}
@@ -21,35 +23,65 @@
 	async function openFilePicker() {
 		sourceFiles = await window.showOpenFilePicker(options);
 
-		allContent = await Promise.all(
-			sourceFiles.map(async (fileHandle) => {
-				const file = await fileHandle.getFile();
-				const src = URL.createObjectURL(file);
-				const thumbnail = await getVideoCover(file, 0);
+		allContent = [
+			...allContent,
+			...(
+				await Promise.all(
+					sourceFiles.map(async (fileHandle) => {
+						const file = await fileHandle.getFile();
+						const src = URL.createObjectURL(file);
 
-				return {
-					src,
-					label: file.name,
-					size: file.size,
-					thumbnail
-				};
-			})
-		);
+						const newContent = {
+							src,
+							label: file.name,
+							size: file.size
+						};
 
-		$previewSrc = allContent[0];
+						if (!allContent.some((content) => content.label === newContent.label))
+							return newContent;
+					})
+				)
+			).filter((item) => item)
+		];
+	}
+
+	function playOnEnter(video) {
+		video.play();
+	}
+	function pauseOnLeave(video) {
+		video.pause();
+		video.currentTime = 0;
+	}
+
+	function selectPreview(src) {
+		$previewSrc = src;
+		console.log($previewSrc);
 	}
 </script>
 
 <main class="col fcenter fill">
-	{#if allContent}
-		<ul>
-			{#each allContent as content}
-				<li class="col">
-					<img src={content.thumbnail} alt={content.label} />
-					<p>{content.label}</p>
-				</li>
-			{/each}
-		</ul>
+	{#if allContent.length > 0}
+		<div class="scroll">
+			<ul class="row xfill">
+				{#each allContent as { src, label, size }, i}
+					<li class="col grow3">
+						<video
+							class="cover fill"
+							{src}
+							title="{label} - {(size / 1024 / 1024).toFixed(2) + 'Mb'}"
+							muted
+							loop
+							bind:this={videoPreviews[i]}
+							bind:duration={videoDuration[i]}
+							on:mouseenter={() => playOnEnter(videoPreviews[i])}
+							on:mouseleave={() => pauseOnLeave(videoPreviews[i])}
+							on:click={() => selectPreview(src)}
+						/>
+						<p class="tright xfill">{timeFormat(videoDuration[i])}</p>
+					</li>
+				{/each}
+			</ul>
+		</div>
 	{/if}
 	<button on:click={openFilePicker}>ADD CONTENT</button>
 </main>
@@ -59,6 +91,27 @@
 		width: 25%;
 		height: 60%;
 		box-shadow: inset 0 0 0 1px #000;
+	}
+
+	ul {
+		gap: 10px;
+		padding: 20px;
+	}
+
+	li {
+		position: relative;
+		aspect-ratio: 4/3;
+
+		p {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			color: #fff;
+			font-size: 12px;
+			font-weight: bold;
+			text-shadow: 0 0 2px rgba(#000, 0.9);
+			padding: 4px 6px;
+		}
 	}
 
 	button {
