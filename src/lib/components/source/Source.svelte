@@ -14,7 +14,17 @@
 		video.currentTime = 0;
 	}
 
+	function resetPreview() {
+		$previewState = {
+			src: '',
+			duration: 0,
+			paused: true,
+			currentTime: 0
+		};
+	}
+
 	function selectPreview(src) {
+		resetPreview();
 		$previewState.src = src;
 	}
 </script>

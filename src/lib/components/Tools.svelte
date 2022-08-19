@@ -1,39 +1,67 @@
 <script>
-	import { isPlaying, previewState } from '$lib/stores';
+	import { previewState, frameRate } from '$lib/stores';
 	import { onMount } from 'svelte';
 
 	function playPausePreview() {
 		if ($previewState.src === '') return;
-		$isPlaying = !$isPlaying;
+		$previewState.paused = !$previewState.paused;
 	}
 
 	function frameNext() {
 		if ($previewState.src === '') return;
+		$previewState.paused = true;
+		$previewState.currentTime += 1 / $frameRate;
+	}
+
+	function framePrev() {
+		if ($previewState.src === '') return;
+		$previewState.paused = true;
+		$previewState.currentTime -= 1 / $frameRate;
+	}
+
+	function clipStart() {
+		if ($previewState.src === '') return;
+		$previewState.paused = true;
+		$previewState.currentTime = 0;
+	}
+
+	function clipEnd() {
+		if ($previewState.src === '') return;
+		$previewState.paused = true;
+		$previewState.currentTime = $previewState.duration;
 	}
 
 	onMount(() => {
 		window.addEventListener('keydown', (e) => {
-			if (e.code === 'Space' && $previewState.src !== '') $isPlaying = !$isPlaying;
+			if (e.code === 'Space') playPausePreview();
+			if (e.code === 'ArrowRight') frameNext();
+			if (e.code === 'ArrowLeft') framePrev();
+			if (e.ctrlKey && e.code === 'ArrowRight') clipEnd();
+			if (e.ctrlKey && e.code === 'ArrowLeft') clipStart();
 		});
 	});
 </script>
 
 <main class="row fcenter fill">
 	<ul class="controls row fcenter">
-		<li class="row fcenter">
-			<img src="/icons/clip-start.svg" alt="Clip start" title="Clip start" />
+		<li class="row fcenter" on:click={clipStart}>
+			<img src="/icons/clip-start.svg" alt="Clip start" title="Clip start (Ctrl + Left arrow)" />
 		</li>
-		<li class="row fcenter">
-			<img src="/icons/frame-prev.svg" alt="Previous frame" title="Previous frame" />
+		<li class="row fcenter" on:click={framePrev}>
+			<img src="/icons/frame-prev.svg" alt="Previous frame" title="Previous frame (Left arrow)" />
 		</li>
 		<li class="row fcenter" on:click={playPausePreview}>
-			<img src="/icons/{$isPlaying ? 'pause' : 'play'}.svg" alt="Play/Pause" title="Play/Pause" />
+			<img
+				src="/icons/{$previewState.paused ? 'play' : 'pause'}.svg"
+				alt="Play/Pause"
+				title="Play/Pause (Space)"
+			/>
 		</li>
-		<li class="row fcenter">
-			<img src="/icons/frame-next.svg" alt="Next frame" title="Next frame" />
+		<li class="row fcenter" on:click={frameNext}>
+			<img src="/icons/frame-next.svg" alt="Next frame" title="Next frame (Right arrow)" />
 		</li>
-		<li class="row fcenter">
-			<img src="/icons/clip-end.svg" alt="Clip end" title="Clip end" />
+		<li class="row fcenter" on:click={clipEnd}>
+			<img src="/icons/clip-end.svg" alt="Clip end" title="Clip end (Ctrl + Right arrow)" />
 		</li>
 	</ul>
 </main>

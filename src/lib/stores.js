@@ -1,7 +1,6 @@
 import { writable } from 'svelte/store';
 
-export const isPlaying = writable(false);
-export const previewSrc = writable('');
+export const frameRate = writable(24);
 export const sourceContent = writable([]);
 export const previewState = writable({
 	src: '',

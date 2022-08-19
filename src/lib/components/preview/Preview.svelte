@@ -1,23 +1,15 @@
 <script>
-	import { previewState, isPlaying } from '$lib/stores';
-
-	let videoEl;
-
-	$: if ($previewState.src) $isPlaying = !isPlaying;
-	$: if (videoEl) $isPlaying ? videoEl.play() : videoEl.pause();
-
-	$: if ($previewState.duration) console.log($previewState.duration);
+	import { previewState } from '$lib/stores';
 </script>
 
 <main class="col fcenter fill">
 	<div class="video-wrapper row fcenter fill">
 		<video
-			bind:this={videoEl}
+			class="contain"
+			src={$previewState.src}
 			bind:duration={$previewState.duration}
 			bind:currentTime={$previewState.currentTime}
 			bind:paused={$previewState.paused}
-			class="contain"
-			src={$previewState.src}
 		>
 			<track kind="captions" />
 		</video>
